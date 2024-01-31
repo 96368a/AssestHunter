@@ -3,48 +3,25 @@ import Counter from "~/components/Counter";
 
 export default function Home() {
   return (
-    <main class="text-center mx-auto text-gray-700 p-4">
-      <h1 class="max-6-xs text-6xl text-sky-700 font-thin uppercase my-16">
-        <div class="flex justify-center items-center">
-          <span class="mr-5">Hello</span>{" "}
-          <img
-            class="w-12 h-12"
-            src="https://unocss.dev/logo.svg"
-            alt="UnoCSS logo"
-          />
-          !
-        </div>
-      </h1>
-      <Counter />
-      <p class="mt-8">
-        Visit{" "}
-        <a
-          href="https://solidjs.com"
-          target="_blank"
-          class="text-sky-600 hover:underline"
-        >
-          solidjs.com
-        </a>{" "}
-        to learn how to build Solid apps.
-      </p>
-      <p class="mt-2">
-        Visit{" "}
-        <a
-          href="https://unocss.dev"
-          target="_blank"
-          class="text-sky-600 hover:underline"
-        >
-          unocss.dev
-        </a>{" "}
-        to learn how to style your app.
-      </p>
-      <p class="my-4">
-        <span>Home</span>
-        {" - "}
-        <A href="/about" class="text-sky-600 hover:underline">
-          About Page
-        </A>{" "}
-      </p>
-    </main>
+<main class="bg-gray-100 dark:bg-gray-900">
+
+<div class="min-h-screen flex items-center justify-center">
+  <div class="bg-white dark:bg-gray-800 p-8 rounded shadow-md w-96">
+    <h1 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">Login</h1>
+    <form>
+      <div class="mb-4">
+        <label for="username" class="block text-sm font-medium text-gray-600 dark:text-gray-300">Username</label>
+        <input type="text" id="username" name="username" class="mt-1 p-2 w-full border rounded-md dark:border-gray-600 focus:outline-none focus:ring focus:border-blue-300" />
+      </div>
+      <div class="mb-4">
+        <label for="password" class="block text-sm font-medium text-gray-600 dark:text-gray-300">Password</label>
+        <input type="password" id="password" name="password" class="mt-1 p-2 w-full border rounded-md dark:border-gray-600 focus:outline-none focus:ring focus:border-blue-300" />
+      </div>
+      <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300">Login</button>
+    </form>
+  </div>
+</div>
+
+</main>
   );
 }
