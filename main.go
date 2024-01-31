@@ -2,6 +2,8 @@ package main
 
 import (
 	"flag"
+	"github.com/96368a/assets_hunter/app/controller"
+	"github.com/96368a/assets_hunter/app/model"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
@@ -10,35 +12,10 @@ import (
 	"github.com/spf13/viper"
 	"log"
 	"net/http"
-	"net/http/httputil"
-	"net/url"
 	"os"
 )
 
-type Config struct {
-	Username string
-	Password string
-	Fofa     FofaConfig
-	Quake    QuakeConfig
-	Hunter   HunterConfig
-}
-
-type FofaConfig struct {
-	Email string
-	Key   string
-}
-
-type QuakeConfig struct {
-	Email string
-	Key   string
-}
-
-type HunterConfig struct {
-	Email string
-	Key   string
-}
-
-var config Config
+var config model.Config
 var isDebugMode bool
 
 func AuthMiddleware() gin.HandlerFunc {
@@ -53,32 +30,6 @@ func AuthMiddleware() gin.HandlerFunc {
 		c.Next()
 
 	}
-}
-
-func proxy(c *gin.Context) {
-	remote, err := url.Parse("https://fofa.info/")
-	if err != nil {
-		panic(err)
-	}
-
-	proxy := httputil.NewSingleHostReverseProxy(remote)
-	//Define the director func
-	//This is a good place to log, for example
-	proxy.Director = func(req *http.Request) {
-		req.Header = c.Request.Header
-		req.Host = remote.Host
-		req.URL.Scheme = remote.Scheme
-		req.URL.Host = remote.Host
-		req.URL.Path = "/api/v1" + c.Param("proxyPath")
-		req.URL.RawQuery = c.Request.URL.RawQuery
-		fofaKey, _ := c.GetQuery("key")
-		if config.Fofa.Key != "" && fofaKey == "" {
-			req.URL.RawQuery = req.URL.RawQuery + "&email=" + config.Fofa.Email + "&key=" + config.Fofa.Key
-		}
-	}
-	c.Writer.Header().Set("X-FLAG", "flag{xxx-xxx}")
-	c.Writer.Header().Set("X-Forwarded-For", c.ClientIP())
-	proxy.ServeHTTP(c.Writer, c.Request)
 }
 
 func InitConfig() {
@@ -123,18 +74,8 @@ func main() {
 		}))
 	}
 	//Create a catchall route
-	r.Any("/fofa/api/v1/*proxyPath", AuthMiddleware(), proxy)
-	r.POST("/api/login", func(c *gin.Context) {
-		username := c.DefaultPostForm("username", "")
-		password := c.DefaultPostForm("password", "")
-		if username == config.Username && password == config.Password {
-			session := sessions.Default(c)
-			session.Set("login", true)
-			session.Save()
-			c.JSON(http.StatusOK, gin.H{"message": "登录成功"})
-			return
-		}
-		c.JSON(http.StatusOK, gin.H{"message": "登录失败"})
-	})
+	r.POST("/fofa/api/v1/*proxyPath", AuthMiddleware(), controller.FofaController(config))
+	r.POST("/api/login", controller.LoginController(config))
+	r.GET("/api/checkLogin", controller.CheckLoginController())
 	r.Run(":8080")
 }

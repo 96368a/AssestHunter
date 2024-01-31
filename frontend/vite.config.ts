@@ -4,11 +4,11 @@ import AutoImport from 'unplugin-auto-import/vite'
 
 export default defineConfig({
   plugins: [UnoCSS(),
-  AutoImport({
-    imports: [
-      'solid-js',
-    ],
-    dts: true,
-  })
+  // AutoImport({
+  //   imports: [
+  //     'solid-js',
+  //   ],
+  //   dts: true,
+  // })
 ],
 });

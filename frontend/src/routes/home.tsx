@@ -1,44 +1,76 @@
-export default function Home() {
-    return (
-        <div class="flex justify-center">
-            <div class="bg-blue-100 p-2 h-full">
-                <ul class="menu bg-base-200 w-56 rounded-box">
-                    <li>
-                        <details id="disclosure-docs">
-                            <summary class="group">
-                                <span>
-                                    <svg width="18" height="18" viewBox="0 0 48 48" class="text-orange-400 h-5 w-5" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M5 7H16C20.4183 7 24 10.5817 24 15V42C24 38.6863 21.3137 36 18 36H5V7Z" fill="none"
-                                            stroke="currentColor" stroke-width="4" stroke-linejoin="bevel"></path>
-                                        <path d="M43 7H32C27.5817 7 24 10.5817 24 15V42C24 38.6863 26.6863 36 30 36H43V7Z" fill="none"
-                                            stroke="currentColor" stroke-width="4" stroke-linejoin="bevel"></path>
-                                    </svg></span> 文档
-                            </summary>
-                            <ul>
-                                <li> <a href="/docs/install/" class="group   "> <span>安装 </span> </a></li>
-                                <li> <a href="/docs/use/" class="group   "> <span>使用 </span> </a></li>
-                                <li> <a href="/docs/customize/" class="group   "> <span>自定义组件 </span> </a></li>
-                                <li> <a href="/docs/config/" class="group   "> <span>全局配置 </span> <span
-                                    class="badge badge-sm font-mono undefined">更新 </span> </a></li>
-                                <li> <a href="/docs/colors/" class="group   "> <span>颜色 </span> <span
-                                    class="badge badge-sm font-mono undefined">更新 </span> </a></li>
-                                <li> <a href="/docs/themes/" class="group active  active"> <span>主题 </span> <span
-                                    class="badge badge-sm font-mono undefined">更新 </span> </a></li>
-                                <li> <a href="/docs/utilities/" class="group   "> <span>工具类 </span> <span
-                                    class="badge badge-sm font-mono undefined">新增 </span> </a></li>
-                                <li> <a href="/docs/layout-and-typography/" class="group   ">
-                                    <span>布局 &amp; 排版 </span> </a></li>
-                            </ul>
-                        </details>
-                    </li>
-                    <li><a>Item 2</a></li>
-                    <li><a>Item 3</a></li>
-                </ul>
+import { useLocation, type RouteSectionProps, redirect } from "@solidjs/router";
+import { onMount } from "solid-js";
+import { checkLogin } from "~/api/login";
+
+export default function UsersLayout(props: RouteSectionProps) {
+  onMount(() => {
+    checkLogin().then((res) => {
+      console.log(res);
+      if (res.data.code && res.data.code != 200) {
+        location.href = "/"
+      }
+    })
+  })
+  return (
+    <div>
+      <header class="bg-white dark:bg-gray-800 shadow px-10 py-2">
+        <div class="flex">
+          <div class="flex-1 flex items-center container">
+            <div class="i-line-md:emoji-smile-wink-twotone text-4xl"></div>
+            <div class="ml-4 w-full">
+              <input type="text" placeholder="Type here" class="input input-bordered w-full input-md max-w-6xl" />
             </div>
-            <div class="flex-1 bg-gray-50">
-                <h2>content</h2>
-            </div>
+          </div>
+          <div class="flex items-center justify-end">
+            <button class="text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none">
+              <div class="i-mdi-person"></div>
+              <i>管理员</i>
+            </button>
+            <button class="text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none ml-4">
+              <div><div class="icon i-mdi:exit-to-app inline-block"></div>注销登录</div>
+            </button>
+          </div>
         </div>
-    );
+
+      </header>
+
+      <div class="container mx-auto mt-4 px-4">
+        <div class="flex">
+          <div class="w-1/4">
+            <nav class="bg-white dark:bg-gray-800 shadow">
+              <div class="p-4">
+                <ul class="space-y-2">
+                  <li>
+                    <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 block">
+                      <i class="material-icons">dashboard</i>
+                      <span class="ml-2">Dashboard</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 block">
+                      <i class="material-icons">settings</i>
+                      <span class="ml-2">Settings</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 block">
+                      <i class="material-icons">person</i>
+                      <span class="ml-2">Profile</span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </nav>
+          </div>
+
+          <div class="w-3/4 ml-4">
+            <div class="bg-white dark:bg-gray-800 shadow p-4">
+              <h2 class="text-xl font-semibold">Welcome, John Doe</h2>
+              <p class="text-gray-600 dark:text-gray-400 mt-2">You have 5 new notifications.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
