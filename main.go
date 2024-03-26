@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"github.com/96368a/assets_hunter/app/controller"
 	"github.com/96368a/assets_hunter/app/model"
@@ -10,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/spf13/viper"
+	"gopkg.in/yaml.v3"
 	"log"
 	"net/http"
 	"os"
@@ -32,16 +34,33 @@ func AuthMiddleware() gin.HandlerFunc {
 	}
 }
 
-func InitConfig() {
+func InitConfig() error {
 	viper.SetConfigName("config")
 	viper.AddConfigPath(".")
 	//viper.SetConfigType("toml")
 	err := viper.ReadInConfig()
 	if err != nil {
+		var configFileNotFoundError viper.ConfigFileNotFoundError
+		if errors.As(err, &configFileNotFoundError) {
+			config.Username = "admin"
+			config.Password = "admin"
+			marshal, err := yaml.Marshal(config)
+			if err != nil {
+				return errors.New("创建配置文件失败")
+			}
+			log.Println("配置文件不存在，已创建空白配置文件")
+			os.WriteFile("./config.yaml", marshal, 0644)
+			return nil
+		}
 		log.Fatal("read config failed: %v", err)
+		return err
 	}
-	viper.Unmarshal(&config)
+	err = viper.Unmarshal(&config)
+	if err != nil {
+		return err
+	}
 	log.Printf("%v", config)
+	return nil
 	//fmt.Println("protocols: ", viper.GetStringSlice("server.protocols"))
 	//fmt.Println("ports: ", viper.GetStringSlice("fofa.email"))
 	//fmt.Println("timeout: ", viper.GetStringSlice("server.timeout"))
@@ -74,7 +93,7 @@ func main() {
 		}))
 	}
 	//Create a catchall route
-	r.POST("/fofa/api/v1/*proxyPath", AuthMiddleware(), controller.FofaController(config))
+	r.GET("/fofa/api/v1/*proxyPath", AuthMiddleware(), controller.FofaController(config))
 	r.POST("/api/login", controller.LoginController(config))
 	r.GET("/api/checkLogin", controller.CheckLoginController())
 	r.Run(":8080")

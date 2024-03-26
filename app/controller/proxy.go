@@ -16,7 +16,7 @@ func FofaController(config model.Config) gin.HandlerFunc {
 		}
 
 		proxy := httputil.NewSingleHostReverseProxy(remote)
-
+		c.Request.Header.Del("Origin")
 		proxy.Director = func(req *http.Request) {
 			req.Header = c.Request.Header
 			req.Host = remote.Host
@@ -31,6 +31,8 @@ func FofaController(config model.Config) gin.HandlerFunc {
 		}
 		c.Writer.Header().Set("X-FLAG", "flag{xxx-xxx}")
 		c.Writer.Header().Set("X-Forwarded-For", c.ClientIP())
+		c.Writer.Header().Del("Access-Control-Allow-Credentials")
+		c.Writer.Header().Del("Access-Control-Allow-Origin")
 		proxy.ServeHTTP(c.Writer, c.Request)
 	}
 }

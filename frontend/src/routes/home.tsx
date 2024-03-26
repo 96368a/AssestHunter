@@ -18,7 +18,7 @@ export default function UsersLayout(props: RouteSectionProps) {
   let [assests, setAssets] = createStore([] as [][])
   const getAssets = () => {
     getFofaAssetsApi({
-      qbase64: "111"
+      qbase64: "aXA9IjIwMi4xMTQuOTQuMzcvMjYiICYmIHRpdGxlPT0i6aKY5bqT566h55CG57O757ufIg=="
     }).then((res) => {
       setAssets(res.data.results)
       console.log(assests);
@@ -40,7 +40,7 @@ X-Xss-Protection: 1; mode=block`
     <div>
       <header class="bg-white dark:bg-gray-800 shadow px-10 py-2">
         <div class="flex">
-          <div class="flex-1 flex items-center container">
+          <div class="flex-1 flex">
             <div class="i-line-md:emoji-smile-wink-twotone text-4xl"></div>
             <div class="ml-4 w-full pr-8">
               <div class="input input-bordered flex items-center max-w-6xl">
@@ -51,7 +51,7 @@ X-Xss-Protection: 1; mode=block`
               </div>
             </div>
           </div>
-          <div class="flex items-center justify-end">
+          <div class="flex sm-container">
             <button class="text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none">
               <div class="flex items-center">
                 <div class="i-mdi:person"></div>
