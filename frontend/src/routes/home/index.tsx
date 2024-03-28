@@ -1,8 +1,9 @@
 import { useLocation, type RouteSectionProps, redirect } from "@solidjs/router";
-import { For, onMount } from "solid-js";
+import { For, createSignal, onMount } from "solid-js";
 import { createStore } from "solid-js/store";
 import { getFofaAssetsApi } from "~/api/asset";
 import { checkLogin } from "~/api/login";
+import { base64Encode } from "~/utils/base64";
 
 export default function UsersLayout(props: RouteSectionProps) {
   onMount(() => {
@@ -16,10 +17,15 @@ export default function UsersLayout(props: RouteSectionProps) {
     setAssets(o)
   })
 
+  let [keyword, setKeyword] = createSignal("")
   let [assests, setAssets] = createStore([] as string[][])
   const getAssets = () => {
+    if (!keyword()) return
+    console.log(keyword());
+    let qbase64 = base64Encode(keyword())
     getFofaAssetsApi({
-      qbase64: "aXA9IjIwMi4xMTQuOTQuMzcvMjYiICYmIHRpdGxlPT0i6aKY5bqT566h55CG57O757ufIg=="
+      qbase64: qbase64,
+      fields: "host,ip,port,banner,title"
     }).then((res) => {
       setAssets(res.data.results)
       console.log(assests);
@@ -46,7 +52,7 @@ X-Xss-Protection: 1; mode=block`
             <div class="ml-4 w-full pr-8">
               <div class="input input-bordered flex items-center max-w-6xl">
                 <button class="i-arcticons:fdroid-nethunter text-2xl text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none"></button>
-                <input class="flex-1 bg-transparent px-4" placeholder="搜索" />
+                <input class="flex-1 bg-transparent px-4" placeholder="搜索" oninput={(e) => setKeyword(e.currentTarget.value)} />
                 <button class="i-mdi:search text-2xl text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none"
                   onclick={getAssets}></button>
               </div>
@@ -78,14 +84,14 @@ X-Xss-Protection: 1; mode=block`
         </div>
         <div class="flex-1">
           <For each={assests}>{(asset, i) =>
-            <div class="flex flex-col gap-4 p-4">
-              <div class="collapse bg-base-200">
+            <div class="flex flex-col gap-4 p-4 ">
+              <div class="collapse bg-base-200 shadow">
                 <input type="checkbox" checked />
                 <div class="collapse-title font-medium">
                   <div class="flex gap-8">
                     <span>{asset[0]}</span>
                     <span>
-                      电子文档安全管理系统
+                      {asset[4]}
                     </span>
                   </div>
                 </div>
@@ -98,24 +104,20 @@ X-Xss-Protection: 1; mode=block`
                     </div>
                     <div class="flex-1">
                       <div role="tablist" class="tabs tabs-lifted">
-                        <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Tab 1" />
-                        <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6">Tab content 1</div>
+                        <input type="radio" name={"tabs_" + i()} role="tab" class="tab" aria-label="Banner" checked />
+                        <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6">
+                          <pre text-xs h-32 overflow-auto>
+                            {testHeader.substring(0, 1000)}
+                          </pre>
+                        </div>
 
-                        <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Tab 2" checked />
-                        <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6">Tab content 2</div>
-
-                        <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Tab 3" />
-                        <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6">Tab content 3</div>
+                        <input type="radio" name={"tabs_" + i()} role="tab" class="tab" aria-label="Other" />
+                        <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6">
+                          <pre h-32 text-sm>
+                            ...
+                          </pre>
+                        </div>
                       </div>
-                      {/* <div role="tablist" class="tabs tabs-lifted">
-                        <a role="tab" class="tab tab-active">Header</a>
-                        <a role="tab" class="tab">Tab 2</a>
-                      </div>
-                      <div class="h-36 overflow-y-auto scroll-smooth px-1">
-                        <span class="whitespace-pre-wrap text-sm">
-                          {testHeader}
-                        </span>
-                      </div> */}
                     </div>
                   </div>
                 </div>
@@ -123,17 +125,6 @@ X-Xss-Protection: 1; mode=block`
             </div>
           }</For>
 
-
-<div role="tablist" class="tabs tabs-lifted">
-  <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Tab 1" />
-  <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6">Tab content 1</div>
-
-  <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Tab 2" checked />
-  <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6">Tab content 2</div>
-
-  <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Tab 3" />
-  <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6">Tab content 3</div>
-</div>
         </div>
       </div>
     </div>
