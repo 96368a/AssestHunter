@@ -20,6 +20,7 @@
     "@unocss/reset": "^0.58.7",
     "axios": "^1.6.8",
     "daisyui": "^4.9.0",
+    "js-base64": "^3.7.7",
     "solid-js": "^1.8.16",
     "solidjs-use": "^2.3.0",
     "unocss": "^0.58.7",

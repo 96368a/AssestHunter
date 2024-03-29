@@ -3,7 +3,7 @@ import { For, createSignal, onMount } from "solid-js";
 import { createStore } from "solid-js/store";
 import { getFofaAssetsApi } from "~/api/asset";
 import { checkLogin } from "~/api/login";
-import { base64Encode } from "~/utils/base64";
+import {Base64} from "js-base64";
 
 export default function UsersLayout(props: RouteSectionProps) {
   onMount(() => {
@@ -22,27 +22,16 @@ export default function UsersLayout(props: RouteSectionProps) {
   const getAssets = () => {
     if (!keyword()) return
     console.log(keyword());
-    let qbase64 = base64Encode(keyword())
+    let qbase64 = Base64.encode(keyword())
     getFofaAssetsApi({
       qbase64: qbase64,
-      fields: "host,ip,port,banner,title"
+      fields: "host,ip,port,header,title"
     }).then((res) => {
       setAssets(res.data.results)
       console.log(assests);
     })
   }
 
-  const testHeader = `HTTP/1.1 200
-Connection: close
-Content-Length: 309
-Content-Type: text/html;charset=UTF-8
-Date: Thu, 01 Feb 2024 02:05:18 GMT
-Set-Cookie: JSESSIONID=080165579A2BD1888A2D05C3F1BC2453; Path=/; HttpOnly
-X-Content-Type-Options: nosniff
-X-Frame-Options: ALLOW-FROM null
-X-Protected-By: RASP
-X-Request-Id: 04ae779406a84046837660cb4250e03c
-X-Xss-Protection: 1; mode=block`
   return (
     <div>
       <header class="bg-white dark:bg-gray-800 shadow px-10 py-2">
@@ -107,7 +96,7 @@ X-Xss-Protection: 1; mode=block`
                         <input type="radio" name={"tabs_" + i()} role="tab" class="tab" aria-label="Banner" checked />
                         <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6">
                           <pre text-xs h-32 overflow-auto>
-                            {testHeader.substring(0, 1000)}
+                            {asset[3]}
                           </pre>
                         </div>
 
