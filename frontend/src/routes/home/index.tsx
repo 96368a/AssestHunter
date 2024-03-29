@@ -1,35 +1,74 @@
 import { useLocation, type RouteSectionProps, redirect } from "@solidjs/router";
-import { For, createSignal, onMount } from "solid-js";
+import { For, Show, createSignal, onMount } from "solid-js";
 import { createStore } from "solid-js/store";
 import { getFofaAssetsApi } from "~/api/asset";
 import { checkLogin } from "~/api/login";
-import {Base64} from "js-base64";
+import { Base64 } from "js-base64";
 
 export default function UsersLayout(props: RouteSectionProps) {
-  onMount(() => {
-    // checkLogin().then((res) => {
-    //   console.log(res);
-    //   if (res.data.code && res.data.code != 200) {
-    //     location.href = "/"
-    //   }
-    // })
-    const o = [["https://215.25.37.5", "215.25.37.5", "443"], ["199.63.94.76", "199.63.94.76", "80"], ["www.test.xxx.cn", "111.114.25.5", "80"], ["https://wxl.tun.xxx.cn", "58.26.67.47", "443"]]
-    setAssets(o)
+  onMount(async () => {
+    setIsLoading(true)
+    const results = localStorage.getItem("results")
+    const keyword = localStorage.getItem("keyword")
+    if (results && keyword) {
+      setAssets(JSON.parse(results))
+      setKeyword(keyword)
+    }
+    setIsLoading(false)
   })
 
+  interface Result {
+    host: string
+    ip: string
+    port: number
+    title: string
+    header: string
+    banner: string
+  }
+
   let [keyword, setKeyword] = createSignal("")
-  let [assests, setAssets] = createStore([] as string[][])
-  const getAssets = () => {
+  let [isLoading, setIsLoading] = createSignal(false)
+  let [assests, setAssets] = createStore([] as Result[])
+  const getAssets = async () => {
+    setIsLoading(true)
     if (!keyword()) return
     console.log(keyword());
     let qbase64 = Base64.encode(keyword())
-    getFofaAssetsApi({
+    const res = await getFofaAssetsApi({
       qbase64: qbase64,
-      fields: "host,ip,port,header,title"
-    }).then((res) => {
-      setAssets(res.data.results)
-      console.log(assests);
+      fields: "host,ip,port,title,header,banner",
+      size: 10
     })
+    if (res.data.results && res.data.results.length > 0) {
+      let results = res.data.results.map((item: any) => {
+        return {
+          host: item[0],
+          ip: item[1],
+          port: item[2],
+          title: item[3],
+          header: item[4],
+          banner: item[5]
+        }
+      })
+      setAssets(results)
+      console.log(results);
+      localStorage.setItem("keyword", keyword())
+      localStorage.setItem("results", JSON.stringify(results))
+    }
+
+    setIsLoading(false)
+  }
+  const handleKeyword = (e: KeyboardEvent) => {
+    if (e.key === "Enter") {
+      getAssets()
+    }
+  }
+
+  const cleanResults = () => {
+    localStorage.removeItem("keyword")
+    localStorage.removeItem("results")
+    setKeyword("")
+    setAssets([])
   }
 
   return (
@@ -41,7 +80,7 @@ export default function UsersLayout(props: RouteSectionProps) {
             <div class="ml-4 w-full pr-8">
               <div class="input input-bordered flex items-center max-w-6xl">
                 <button class="i-arcticons:fdroid-nethunter text-2xl text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none"></button>
-                <input class="flex-1 bg-transparent px-4" placeholder="搜索" oninput={(e) => setKeyword(e.currentTarget.value)} />
+                <input class="flex-1 bg-transparent px-4" placeholder="搜索" value={keyword()} oninput={(e) => setKeyword(e.currentTarget.value)} onkeydown={handleKeyword} />
                 <button class="i-mdi:search text-2xl text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none"
                   onclick={getAssets}></button>
               </div>
@@ -65,22 +104,53 @@ export default function UsersLayout(props: RouteSectionProps) {
 
       </header>
 
-      <div class="flex items-center justify-center">
-        <div class="w-80 bg-red-100">
-          <ul>
-            <li>a</li>
+      <div class="flex">
+        <div class="w-80 flex justify-center h-full p-4 flex-none">
+          <ul class="menu bg-base-200 w-56 rounded-box">
+            <li><a>Item 1</a></li>
+            <li>
+              <details open>
+                <summary>Parent</summary>
+                <ul>
+                  <li><a>Submenu 1</a></li>
+                  <li><a>Submenu 2</a></li>
+                  <li>
+                    <details open>
+                      <summary>Parent</summary>
+                      <ul>
+                        <li><a>Submenu 1</a></li>
+                        <li><a>Submenu 2</a></li>
+                      </ul>
+                    </details>
+                  </li>
+                </ul>
+              </details>
+            </li>
+            <li><a>Item 3</a></li>
+            <li>
+              <button onclick={cleanResults}>清除搜索结果</button>
+            </li>
           </ul>
         </div>
-        <div class="flex-1">
-          <For each={assests}>{(asset, i) =>
-            <div class="flex flex-col gap-4 p-4 ">
+        <div class="flex-1 p-4 gap-6 flex flex-col">
+          <Show when={isLoading() && assests.length == 0}>
+            <div class="flex flex-col gap-4 w-full px-4">
+              <div class="skeleton h-4 w-full"></div>
+              <div class="flex gap-4">
+                <div class="skeleton h-40 min-w-sm"></div>
+                <div class="skeleton h-40 w-full"></div>
+              </div>
+            </div>
+          </Show>
+          <For each={assests}>{(result, i) =>
+            <div class="flex flex-col gap-4 ">
               <div class="collapse bg-base-200 shadow">
                 <input type="checkbox" checked />
                 <div class="collapse-title font-medium">
                   <div class="flex gap-8">
-                    <span>{asset[0]}</span>
+                    <span>{result.host}</span>
                     <span>
-                      {asset[4]}
+                      {result.title}
                     </span>
                   </div>
                 </div>
@@ -88,15 +158,18 @@ export default function UsersLayout(props: RouteSectionProps) {
                   <div class="divider my-0"></div>
                   <div class="px-4 flex gap-8">
                     <div class="flex flex-col min-w-sm">
-                      <div>{asset[1]}</div>
+                      <div class="line-height-loose">
+                        <span>{result.ip}</span>
+                        <span class="ml-4">{result.port}</span>
+                      </div>
                       <div>地区、运营商</div>
                     </div>
                     <div class="flex-1">
                       <div role="tablist" class="tabs tabs-lifted">
-                        <input type="radio" name={"tabs_" + i()} role="tab" class="tab" aria-label="Banner" checked />
+                        <input type="radio" name={"tabs_" + i()} role="tab" class="tab" aria-label={result.banner ? "Banner" : "Header"} checked />
                         <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6">
                           <pre text-xs h-32 overflow-auto>
-                            {asset[3]}
+                            {result.banner || result.header}
                           </pre>
                         </div>
 
