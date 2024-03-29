@@ -1,5 +1,5 @@
 import { A } from "@solidjs/router";
-import { createSignal } from "solid-js";
+import { createSignal, onMount } from "solid-js";
 import { createStore } from "solid-js/store";
 import { checkLogin, login } from "~/api/login";
 import { User } from "~/api/model/user";
@@ -7,14 +7,19 @@ import Counter from "~/components/Counter";
 
 export default function Home() {
   let [user, setUser] = createStore({ username: "", password: "" } as User)
-  const UserLogin = () => login(user).then((res) => {
-    console.log(res);
+  onMount(() => {
+    handleLogin()
+  })
+  const handleLogin = () => {
     checkLogin().then((res) => {
-      console.log(res);
-      if (res.data.code && res.data.code == 200) {
+      if (res) {
         location.href = "/home"
       }
     })
+  }
+  const UserLogin = () => login(user).then((res) => {
+    console.log(res);
+    handleLogin()
   })
   return (
     <main class="bg-gray-100 dark:bg-gray-900">

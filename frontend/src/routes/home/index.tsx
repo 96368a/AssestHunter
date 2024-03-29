@@ -1,13 +1,22 @@
-import { useLocation, type RouteSectionProps, redirect } from "@solidjs/router";
+import { type RouteSectionProps, useNavigate } from "@solidjs/router";
 import { For, Show, createSignal, onMount } from "solid-js";
 import { createStore } from "solid-js/store";
 import { getFofaAssetsApi } from "~/api/asset";
-import { checkLogin } from "~/api/login";
+import { checkLogin, logout } from "~/api/login";
 import { Base64 } from "js-base64";
 
 export default function UsersLayout(props: RouteSectionProps) {
+  const navigater = useNavigate()
   onMount(async () => {
     setIsLoading(true)
+    await checkLogin().then((res) => {
+      console.log(res);
+      
+      if (!res) {
+        cleanResults()
+        navigater("/")
+      }
+    })
     const results = localStorage.getItem("results")
     const keyword = localStorage.getItem("keyword")
     if (results && keyword) {
@@ -63,6 +72,14 @@ export default function UsersLayout(props: RouteSectionProps) {
       getAssets()
     }
   }
+  const handleLogout = () => {
+    logout().then((res) => {
+      if (res) {
+        cleanResults()
+        navigater("/")
+      }
+    })
+  }
 
   const cleanResults = () => {
     localStorage.removeItem("keyword")
@@ -76,10 +93,29 @@ export default function UsersLayout(props: RouteSectionProps) {
       <header class="bg-white dark:bg-gray-800 shadow px-10 py-2">
         <div class="flex">
           <div class="flex-1 flex">
+            <div></div>
             <div class="i-line-md:emoji-smile-wink-twotone text-4xl"></div>
             <div class="ml-4 w-full pr-8">
               <div class="input input-bordered flex items-center max-w-6xl">
-                <button class="i-arcticons:fdroid-nethunter text-2xl text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none"></button>
+                <div class="dropdown dropdown-right">
+                  <div tabindex="0" >
+                    <img src="https://fofa.info/favicon.ico" alt="Fofa" />
+                  </div>
+                  <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box min-w-32">
+                    <li>
+                      <div>
+                        <img src="https://quake.360.net/quake/static/index/favicon.ico" alt="Quake" class="w-4 h-4" />
+                        <span>Quake</span>
+                      </div>
+                    </li>
+                    <li>
+                      <div>
+                        <img src="https://hunter.qianxin.com/geagle/static/favicon.ico" alt="Hunter" class="w-4 h-4" />
+                        <span>Hunter</span>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
                 <input class="flex-1 bg-transparent px-4" placeholder="搜索" value={keyword()} oninput={(e) => setKeyword(e.currentTarget.value)} onkeydown={handleKeyword} />
                 <button class="i-mdi:search text-2xl text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none"
                   onclick={getAssets}></button>
@@ -94,7 +130,7 @@ export default function UsersLayout(props: RouteSectionProps) {
               </div>
             </button>
             <button class="text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none ml-4">
-              <div class="flex items-center">
+              <div class="flex items-center" onclick={handleLogout}>
                 <div class=" i-mdi:exit-to-app"></div>
                 <div class="">注销登录</div>
               </div>

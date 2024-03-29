@@ -96,5 +96,6 @@ func main() {
 	r.GET("/fofa/api/v1/*proxyPath", AuthMiddleware(), controller.FofaController(config))
 	r.POST("/api/login", controller.LoginController(config))
 	r.GET("/api/checkLogin", controller.CheckLoginController())
+	r.GET("/api/logout", controller.LogoutController())
 	r.Run(":8080")
 }

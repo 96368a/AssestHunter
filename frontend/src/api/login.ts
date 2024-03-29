@@ -8,6 +8,12 @@ export const login = (user: User) => {
     })
 }
 
-export const checkLogin = () => {
-    return serviceAxios.get("/api/checkLogin")
+export const checkLogin = async (): Promise<boolean> => {
+    const res = await serviceAxios.get("/api/checkLogin")
+    return (res.data.code && res.data.code == 200)
+
+}
+export const logout = async (): Promise<boolean> => {
+    const res = await serviceAxios.get("/api/logout")
+    return (res.data.code && res.data.code == 200)
 }
