@@ -27,11 +27,11 @@ export default function Home() {
         <div class="card w-96 bg-base-100 shadow-xl">
           <div class="card-body">
             <h2 class="card-title py-2 justify-center pr-2">登陆</h2>
-            <form class="flex flex-col">
+            <div class="flex flex-col">
               <input type="text" class="input w-full mb-4 input-bordered" placeholder="用户名" oninput={(e) => setUser("username", e.currentTarget.value)} required />
               <input type="password" class="input w-full mb-4 input-bordered" placeholder="密码" oninput={(e) => setUser("password", e.currentTarget.value)} required />
-              <button type="submit" class="btn w-full mt-4" onclick={UserLogin}>登录</button>
-            </form>
+              <button class="btn w-full mt-4" onclick={UserLogin}>登录</button>
+            </div>
           </div>
         </div>
       </div>

@@ -1,0 +1,32 @@
+*::-webkit-scrollbar {
+
+    width: 6px;
+
+}
+
+
+
+*::-webkit-scrollbar-thumb {
+
+    background: #ccc;
+    /* 滑块颜色*/
+
+    border-radius: 5px;
+    /* 滑块圆角*/
+
+}
+
+
+
+
+* {
+
+    scrollbar-width: 10px;
+
+    scrollbar-base-color: green;
+
+    scrollbar-track-color: red;
+
+    scrollbar-arrow-color: blue;
+
+}

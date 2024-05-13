@@ -1,6 +1,7 @@
 import "@unocss/reset/tailwind.css";
 import 'daisyui/dist/styled.css'
 import "uno.css";
+import "./main.css"
 
 // @refresh reload
 import { Router } from "@solidjs/router";

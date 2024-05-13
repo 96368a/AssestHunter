@@ -86,9 +86,9 @@ func main() {
 	if isDebugMode {
 		log.Printf("调试模式跨域已启动")
 		r.Use(cors.New(cors.Config{
-			AllowOrigins:     []string{"http://localhost:3000"},
+			AllowOrigins:     []string{"http://localhost:3333"},
 			AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-			AllowHeaders:     []string{"Origin", "Content-Type", "Content-Length"},
+			AllowHeaders:     []string{"Origin", "Content-Type", "Content-Length", "Authorization"},
 			AllowCredentials: true,
 		}))
 	}
