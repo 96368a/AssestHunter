@@ -30,6 +30,17 @@ export default defineConfig({
       },
     }),
   ],
+  theme: {
+    colors: {
+      'veryCool': '#0000ff', // class="text-very-cool"
+      'mdui': {
+        'color': {
+          'suface': 'rgba(var(--mdui-color-surface))',
+        },
+        'primary': 'rgba(var(--mdui-color-primary))', //class="bg-brand-primary"
+      },
+    },
+  },
   // transformers: [
   //   transformerDirectives(),
   //   transformerVariantGroup(),

@@ -9,7 +9,9 @@ export default function Index() {
   const handleLogin = () => {
     checkLogin().then((res) => {
       if (res) {
-
+        snackbar({
+          message: "已登录",
+        })
         location.href = "/home"
       }
     })

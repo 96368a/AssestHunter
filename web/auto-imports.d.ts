@@ -73,6 +73,7 @@ declare global {
   const useAction: typeof import('@solidjs/router')['useAction']
   const useBeforeLeave: typeof import('@solidjs/router')['useBeforeLeave']
   const useContext: typeof import('solid-js')['useContext']
+  const useCurrentMatches: typeof import('@solidjs/router')['useCurrentMatches']
   const useDark: typeof import('./src/primitives/useDark')['default']
   const useHref: typeof import('@solidjs/router')['useHref']
   const useIsRouting: typeof import('@solidjs/router')['useIsRouting']

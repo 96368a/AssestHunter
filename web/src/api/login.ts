@@ -1,5 +1,5 @@
 
-import request  from ".";
+import request from ".";
 import { User } from "./model/user";
 
 export const login = async (user: User) => {
@@ -10,7 +10,12 @@ export const login = async (user: User) => {
 }
 
 export const checkLogin = async (): Promise<boolean> => {
-    const res = await request.get("api/checkLogin").json<RespondModel>()
+    const res = await request.get("api/checkLogin").json<RespondModel>().catch((e) => { 
+        snackbar({
+            message: "网络错误",
+          })
+        return { code: 500 } 
+    })
     return (res.code == 200)
 
 }

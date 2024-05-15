@@ -22,6 +22,9 @@ const request = ky.create({
           location.href = "/"
         }
         return error
+      },
+      error => {
+        return error
       }
     ]
   }
